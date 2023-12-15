@@ -1,6 +1,7 @@
 package sky.demo.oautn2auth.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -14,6 +15,7 @@ import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.client.JdbcClientDetailsService;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.redis.RedisTokenStore;
+import sky.demo.oautn2auth.service.impl.MyTokenServices;
 
 import javax.sql.DataSource;
 
@@ -23,6 +25,9 @@ import javax.sql.DataSource;
 @Configuration
 @EnableAuthorizationServer
 public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
+
+    @Value("${single-login}")
+    private String singleLogin;
 
     /**
      * 用户认证 Manager
@@ -46,8 +51,22 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
 
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-        endpoints.authenticationManager(authenticationManager)
-                .tokenStore(tokenStore());
+        endpoints.authenticationManager(authenticationManager);
+        if (Boolean.valueOf(singleLogin)) {
+            endpoints.tokenServices(tokenServices(endpoints));
+        }else {
+            endpoints.tokenStore(tokenStore());
+        }
+    }
+
+    private MyTokenServices tokenServices(AuthorizationServerEndpointsConfigurer endpoints) {
+        MyTokenServices tokenServices = new MyTokenServices();
+        tokenServices.setTokenStore(tokenStore());
+        tokenServices.setSupportRefreshToken(true);//支持刷新token
+        tokenServices.setReuseRefreshToken(true);
+        tokenServices.setClientDetailsService(endpoints.getClientDetailsService());
+        tokenServices.setTokenEnhancer(endpoints.getTokenEnhancer());
+        return tokenServices;
     }
 
     @Override
