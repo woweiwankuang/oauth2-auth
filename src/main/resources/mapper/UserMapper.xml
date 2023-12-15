@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="sky.demo.oautn2auth.mapper.UserMapper">
+
+    <resultMap id="baseMap" type="sky.demo.oautn2auth.model.User">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="enabled" property="enabled"/>
+        <result column="account_non_expired" property="accountNonExpired"/>
+        <result column="account_non_locked" property="accountNonLocked"/>
+        <result column="credentials_non_expired" property="credentialsNonExpired"/>
+        <collection property="authorities" ofType="sky.demo.oautn2auth.model.Authority">
+            <result column="authority" property="authority"/>
+        </collection>
+    </resultMap>
+
+    <select id="findByUsername" resultMap="baseMap">
+        select u.*,
+               a.authority
+        from user u
+        left join authority a on a.user_id = u.id
+        where u.username = #{username}
+    </select>
+
+</mapper>
