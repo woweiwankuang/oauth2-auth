@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import sky.demo.oautn2auth.service.impl.UserServiceImpl;
+import sky.demo.oautn2auth.util.AESUtil;
 import sky.demo.oautn2auth.util.PasswordUtil;
 
 @Configuration
@@ -36,7 +37,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
             @Override
             public boolean matches(CharSequence raw, String encode) {
-                return PasswordUtil.matches(raw, encode);
+                String password = raw.toString();
+                String decPassword = AESUtil.aesDecrypt(password);
+                return PasswordUtil.matches(decPassword, encode);
             }
         };
     }
