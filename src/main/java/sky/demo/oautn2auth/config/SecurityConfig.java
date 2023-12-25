@@ -8,9 +8,9 @@ import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import sky.demo.oautn2auth.service.impl.UserServiceImpl;
+import sky.demo.oautn2auth.util.PasswordUtil;
 
 @Configuration
 @EnableWebSecurity
@@ -27,8 +27,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return NoOpPasswordEncoder.getInstance();
+    public PasswordEncoder passwordEncoder(){
+        return new PasswordEncoder() {
+            @Override
+            public String encode(CharSequence charSequence) {
+                return PasswordUtil.encode(charSequence);
+            }
+
+            @Override
+            public boolean matches(CharSequence raw, String encode) {
+                return PasswordUtil.matches(raw, encode);
+            }
+        };
     }
 
     @Override

@@ -54,7 +54,7 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
         endpoints.authenticationManager(authenticationManager);
         if (Boolean.valueOf(singleLogin)) {
             endpoints.tokenServices(tokenServices(endpoints));
-        }else {
+        } else {
             endpoints.tokenStore(tokenStore());
         }
     }

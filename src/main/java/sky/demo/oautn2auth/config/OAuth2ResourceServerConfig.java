@@ -20,6 +20,7 @@ public class OAuth2ResourceServerConfig extends ResourceServerConfigurerAdapter 
                 .antMatchers(HttpMethod.GET,"/a1").hasRole("USER")
                 .antMatchers(HttpMethod.GET,"/a2").hasAuthority("ROLE_USER")
                 .antMatchers(HttpMethod.GET,"/a3").hasAuthority("USER")
+                .antMatchers(HttpMethod.POST,"/users").permitAll()
                 .anyRequest().authenticated();
     }
 
